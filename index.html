@@ -401,7 +401,7 @@
     const rankFolder = ["1st","2nd","3rd","4th","5th"];
 
     function getImgSrc(rankIndex, memberIndex) {
-      return `img/main/${rankFolder[rankIndex]}/${memberIndex + 1}.png`;
+      return `img/${rankFolder[rankIndex]}/${memberIndex + 1}.png`;
     }
 
     const ordinal = n => ["1st","2nd","3rd","4th","5th"][n-1] || n+"th";
