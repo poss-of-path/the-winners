@@ -314,6 +314,36 @@
 
     .back-btn:hover { color: #111; }
     .back-btn::before { content: "← "; }
+
+    /* ── GUIDES BUTTON ── */
+    .guides-btn-wrap {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    .guides-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #aaa;
+      background: none;
+      border: 1.5px dashed #ccc;
+      padding: 14px 40px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      width: 100%;
+    }
+
+    .guides-btn:hover {
+      color: #111;
+      border-color: #111;
+      border-style: solid;
+    }
   </style>
 </head>
 <body>
@@ -323,8 +353,14 @@
     <div class="label-small">posspath</div>
     <div class="label-big">The Winners</div>
     <div class="home-subtitle">on this path</div>
-
+    
+    <div class="guides-btn-wrap">
+      <button class="guides-btn" onclick="openGuides()">GUIDES</button>
+    </div>
+    
     <div class="winners-list" id="winners-list"></div>
+
+
   </div>
 
   <!-- ══════════════════ CONGRATS PAGE ══════════════════ -->
@@ -341,6 +377,27 @@
       <div class="caption" id="caption"></div>
 
       <div class="member-list" id="member-list"></div>
+
+      <button class="back-btn" onclick="goHome()">Back</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════ GUIDES PAGE ══════════════════ -->
+  <div class="page" id="page-guides">
+    <div class="congrats-inner">
+      <div class="label-small">posspath</div>
+      <div class="label-big">WE DID IT</div>
+      <div class="congrats-sub">Guides — The Best Place</div>
+
+      <div class="stage" id="stage-guides">
+        <div class="ground"></div>
+      </div>
+
+      <div class="caption">
+        Congratulations to all the guides for completing this path of journey. We have successfully completed and met the best possibilities on this path — may we cross paths again somewhere!
+      </div>
+
+      <div class="member-list" id="member-list-guides"></div>
 
       <button class="back-btn" onclick="goHome()">Back</button>
     </div>
@@ -517,7 +574,88 @@
     function goHome() {
       if (animId) { cancelAnimationFrame(animId); animId = null; }
       document.getElementById('page-congrats').classList.remove('active');
+      document.getElementById('page-guides').classList.remove('active');
       document.getElementById('page-home').classList.add('active');
+    }
+
+    /* ── Guides ── */
+    const guidesMembers = [["Rakean",""],["Jamale",""],["Aven",""],["Nyonge",""]];
+
+    function buildStageGuides() {
+      const stage = document.getElementById('stage-guides');
+      stage.querySelectorAll('.person').forEach(el => el.remove());
+      personObjs = [];
+      const spacing = 100;
+      guidesMembers.forEach((name, i) => {
+        const el = document.createElement('div');
+        el.className = 'person';
+        el.innerHTML = `
+          <div class="head"><img src="img/Guides/${i+1}.png" alt="${name[0]}" loading="lazy"></div>
+          <div class="body-wrap">
+            <div class="arms">
+              <div class="arm" id="arml_g${i}"></div>
+              <div class="arm" id="armr_g${i}"></div>
+            </div>
+            <div class="torso"></div>
+          </div>
+          <div class="legs">
+            <div class="leg" id="legl_g${i}"></div>
+            <div class="leg" id="legr_g${i}"></div>
+          </div>
+        `;
+        stage.appendChild(el);
+        personObjs.push({
+          el,
+          x: window.innerWidth + i * spacing + 60,
+          phase: i * 0.65,
+          id: `g${i}`
+        });
+      });
+    }
+
+    function startAnimGuides() {
+      if (animId) cancelAnimationFrame(animId);
+      const stage = document.getElementById('stage-guides');
+      function frame() {
+        const t = performance.now() / 1000;
+        const stageW = stage.offsetWidth;
+        personObjs.forEach((p, i) => {
+          p.x -= 0.65;
+          if (p.x < -60) p.x = stageW + 60;
+          p.el.style.left = p.x + 'px';
+          const cycle = t * 3.5 + p.phase;
+          const la = Math.sin(cycle) * 28;
+          const aa = Math.sin(cycle + Math.PI) * 22;
+          const ll = document.getElementById(`legl_${p.id}`);
+          const lr = document.getElementById(`legr_${p.id}`);
+          const al = document.getElementById(`arml_${p.id}`);
+          const ar = document.getElementById(`armr_${p.id}`);
+          if (ll) ll.style.transform = `rotate(${la}deg)`;
+          if (lr) lr.style.transform = `rotate(${-la}deg)`;
+          if (al) al.style.transform = `rotate(${aa}deg)`;
+          if (ar) ar.style.transform = `rotate(${-aa}deg)`;
+        });
+        animId = requestAnimationFrame(frame);
+      }
+      animId = requestAnimationFrame(frame);
+    }
+
+    function openGuides() {
+      const ml = document.getElementById('member-list-guides');
+      ml.innerHTML = '';
+      guidesMembers.forEach(name => {
+        const tag = document.createElement('div');
+        tag.className = 'member-tag';
+        tag.textContent = name[0];
+        ml.appendChild(tag);
+      });
+
+      buildStageGuides();
+
+      document.getElementById('page-home').classList.remove('active');
+      document.getElementById('page-guides').classList.add('active');
+
+      startAnimGuides();
     }
   </script>
 </body>
